@@ -1,0 +1,81 @@
+# Google Workflows Main Orchestration YAML (Draft Blueprint)
+main:
+  params: [input]
+  steps:
+    - init_state:
+        assign:
+          - campaign_id: ${input.campaign_id}
+          - run_copywriting: ${default(map.get(input, "run_copywriting"), true)}
+          - run_visuals: ${default(map.get(input, "run_visuals"), true)}
+          - run_safety_audit: ${default(map.get(input, "run_safety_audit"), true)}
+          - status: "QUEUED"
+
+    - sync_initial_firestore:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/firestore-sync"
+          body:
+            campaign_id: ${campaign_id}
+            status: "QUEUED"
+            progress: 0
+            message: "Campaign queued for creation"
+
+    - evaluate_routes:
+        switch:
+          - condition: ${run_copywriting == true}
+            next: trigger_copywriter
+          - condition: ${run_visuals == true}
+            next: trigger_visuals
+        next: trigger_safety_audit
+
+    - trigger_copywriter:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/copywriter-agent"
+          body:
+            campaign_id: ${campaign_id}
+            prompt: ${input.prompt}
+        result: copywriter_result
+        next: check_visuals_route
+
+    - check_visuals_route:
+        switch:
+          - condition: ${run_visuals == true}
+            next: trigger_visuals
+        next: trigger_safety_audit
+
+    - trigger_visuals:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/visual-production-agent"
+          body:
+            campaign_id: ${campaign_id}
+            visual_prompt: ${input.visual_prompt}
+            script: ${default(map.get(copywriter_result.body, "content"), "")}
+        result: visuals_result
+
+    - trigger_safety_audit:
+        switch:
+          - condition: ${run_safety_audit == true}
+            next: run_audit
+        next: finalize_campaign
+
+    - run_audit:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/safety-auditor-agent"
+          body:
+            campaign_id: ${campaign_id}
+            text_outputs: ${default(map.get(copywriter_result, "body"), {})}
+            media_outputs: ${default(map.get(visuals_result, "body"), {})}
+        result: audit_result
+
+    - finalize_campaign:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/firestore-sync"
+          body:
+            campaign_id: ${campaign_id}
+            status: "COMPLETED"
+            progress: 100
+            message: "Campaign successfully built and validated."

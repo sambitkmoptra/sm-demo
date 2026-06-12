@@ -1,0 +1,28 @@
+{
+  "agent_id": "copywriter-agent",
+  "name": "Search-Grounded Copywriter",
+  "version": "1.0.0",
+  "model_configuration": {
+    "model_name": "gemini-3.5-pro",
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "max_output_tokens": 8192
+  },
+  "grounding_settings": {
+    "enable_google_search": true,
+    "dynamic_retrieval_threshold": 0.3
+  },
+  "supported_formats": {
+    "blog_post": {
+      "target_length_words": 1200,
+      "required_sections": ["title", "introduction", "body", "conclusion", "seo_metadata"]
+    },
+    "linkedin_post": {
+      "target_length_characters": 1500,
+      "max_hashtags": 5
+    },
+    "ad_copy": {
+      "variations_required": 3
+    }
+  }
+}

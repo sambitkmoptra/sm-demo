@@ -1,0 +1,22 @@
+{
+  "agent_id": "orchestrator-agent",
+  "name": "Campaign Orchestrator",
+  "version": "1.0.0",
+  "description": "Orchestrates multi-channel marketing campaigns by dynamically routing tasks to copywriting, visual, and audit agents based on toggle parameters.",
+  "routing": {
+    "firestore_campaigns_collection": "campaigns",
+    "firestore_state_logs_collection": "execution_logs",
+    "default_retry_policy": {
+      "max_attempts": 3,
+      "backoff_multiplier": 2.0,
+      "initial_delay_seconds": 2
+    }
+  },
+  "supported_channels": [
+    "blog",
+    "sms",
+    "instagram_carousel",
+    "linkedin_post",
+    "video_ad"
+  ]
+}

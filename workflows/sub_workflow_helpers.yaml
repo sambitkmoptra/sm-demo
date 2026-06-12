@@ -1,0 +1,22 @@
+# Helper workflows for handling retries, exponential backoffs, and error callbacks.
+
+error_notifier:
+  params: [campaign_id, error_message]
+  steps:
+    - update_firestore_failure:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/firestore-sync"
+          body:
+            campaign_id: ${campaign_id}
+            status: "FAILED"
+            progress: 100
+            message: ${error_message}
+    - publish_alert:
+        call: http.post
+        args:
+          url: "https://us-central1-social-media-platform.cloudfunctions.net/pubsub-publish-alert"
+          body:
+            campaign_id: ${campaign_id}
+            error: ${error_message}
+            severity: "CRITICAL"

@@ -1,0 +1,39 @@
+# Settings for Firebase App Hosting
+kind: "publishedConfig"
+apiVersion: "v1beta1"
+
+runConfig:
+  cpu: 1
+  memoryMiB: 1024
+  concurrency: 80
+  maxInstances: 10
+  minInstances: 0
+
+env:
+  # Non-sensitive variables
+  - key: "GOOGLE_CLOUD_PROJECT"
+    value: "moptra-ai-demo"
+  - key: "GOOGLE_CLOUD_LOCATION"
+    value: "us-central1"
+  - key: "GCS_BUCKET_NAME"
+    value: "social-media-agent-media"
+  - key: "BACKEND_API_URL"
+    value: "https://social-media-agent-engine-10315890270.us-central1.run.app"
+  - key: "NEXT_PUBLIC_FIREBASE_PROJECT_ID"
+    value: "moptra-ai-demo"
+  - key: "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"
+    value: "moptra-ai-demo.firebaseapp.com"
+  - key: "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET"
+    value: "moptra-ai-demo.appspot.com"
+
+  # Secrets (Must be registered in Google Cloud Secret Manager or configured in App Hosting settings)
+  - key: "AGENT_API_KEY"
+    secret: "AGENT_API_KEY"
+  - key: "NEXT_PUBLIC_FIREBASE_API_KEY"
+    secret: "NEXT_PUBLIC_FIREBASE_API_KEY"
+  - key: "NEXT_PUBLIC_FIREBASE_APP_ID"
+    secret: "NEXT_PUBLIC_FIREBASE_APP_ID"
+  - key: "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID"
+    secret: "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID"
+  - key: "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID"
+    secret: "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID"

@@ -1,0 +1,16 @@
+{
+  "agent_id": "safety-auditor-agent",
+  "name": "Brand Safety Auditor",
+  "version": "1.0.0",
+  "compliance_thresholds": {
+    "profanity_sensitivity": "strict",
+    "competitor_reference": "block",
+    "unverified_claims": "flag",
+    "hallucination_score_limit": 0.15
+  },
+  "execution": {
+    "fail_fast": true,
+    "fallback_action": "manual_review",
+    "log_violations": true
+  }
+}
